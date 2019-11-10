@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 import cv2
 import numpy
@@ -8,12 +10,7 @@ if sys.version_info[0] == 2:  # the tkinter library changed it's name from Pytho
 else:
     import tkinter
 
-import RPi.GPIO as GPIO  
-GPIO.setmode(GPIO.BCM)  
-  
-# GPIO 23 set up as input. It is pulled up to stop false signals  
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-# connect GPIO port 23 (pin 16) to GND (pin 6)
+import RPi.GPIO as GPIO
 
 root = tkinter.Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
@@ -26,11 +23,11 @@ canvas.configure(background='black')
 
 def showPIL(pilImage):
     imgWidth, imgHeight = pilImage.size
- # resize photo to full screen 
-    ratio = min(w/imgWidth, h/imgHeight)
+    # resize photo to full screen
+    ratio = min(float(w)/imgWidth, float(h)/imgHeight)
     imgWidth = int(imgWidth*ratio)
     imgHeight = int(imgHeight*ratio)
-    pilImage = pilImage.resize((imgWidth,imgHeight), Image.ANTIALIAS)   
+    pilImage = pilImage.resize((imgWidth,imgHeight), Image.ANTIALIAS)
     image = ImageTk.PhotoImage(pilImage)
     imagesprite = canvas.create_image(w/2,h/2,image=image)
     root.update_idletasks()
@@ -41,7 +38,7 @@ counter = 0
 while True:
     img = Image.open('BackgroundCompteurShots.png')
     number = str(counter)
-    text = "shots servis depuis le début de la soirée"
+    text = u"shots servis depuis le début de la soirée"
 
     fnt_n = ImageFont.truetype('./Syemox.ttf', 150)
     fnt_t = ImageFont.truetype('./Syemox.ttf', 120)
@@ -60,10 +57,14 @@ while True:
     d.text((pos_t_x, pos_t_y), text, font=fnt_t, fill=color)
     showPIL(img)
     # wait for gpio
-    try:  
-        GPIO.wait_for_edge(23, GPIO.FALLING)  
-    except KeyboardInterrupt:  
+    GPIO.setmode(GPIO.BCM)
+    # GPIO 23 set up as input. It is pulled up to stop false signals
+    GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    # connect GPIO port 23 (pin 16) to GND (pin 6)
+    try:
+        GPIO.wait_for_edge(23, GPIO.FALLING)
+    except KeyboardInterrupt:
         GPIO.cleanup()
         exit()
-    GPIO.cleanup()   
+    GPIO.cleanup()
     counter += 1
