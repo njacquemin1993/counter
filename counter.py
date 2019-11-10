@@ -1,6 +1,40 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageTk
 import cv2
 import numpy
+import sys, os
+if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
+    import Tkinter
+    tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
+else:
+    import tkinter
+
+import RPi.GPIO as GPIO  
+GPIO.setmode(GPIO.BCM)  
+  
+# GPIO 23 set up as input. It is pulled up to stop false signals  
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# connect GPIO port 23 (pin 16) to GND (pin 6)
+
+root = tkinter.Tk()
+w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+root.overrideredirect(1)
+root.geometry("%dx%d+0+0" % (w, h))
+root.focus_set()
+canvas = tkinter.Canvas(root,width=w,height=h)
+canvas.pack()
+canvas.configure(background='black')
+
+def showPIL(pilImage):
+    imgWidth, imgHeight = pilImage.size
+ # resize photo to full screen 
+    ratio = min(w/imgWidth, h/imgHeight)
+    imgWidth = int(imgWidth*ratio)
+    imgHeight = int(imgHeight*ratio)
+    pilImage = pilImage.resize((imgWidth,imgHeight), Image.ANTIALIAS)   
+    image = ImageTk.PhotoImage(pilImage)
+    imagesprite = canvas.create_image(w/2,h/2,image=image)
+    root.update_idletasks()
+    root.update()
 
 counter = 0
 
@@ -24,11 +58,12 @@ while True:
     pos_t_y = pos_n_y + height_n + margin_y
     d.text((pos_n_x, pos_n_y), number, font=fnt_n, fill=color)
     d.text((pos_t_x, pos_t_y), text, font=fnt_t, fill=color)
-
-    opencvImage = cv2.cvtColor(numpy.array(img), cv2.COLOR_RGB2BGR)
-    cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
-    cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,cv2.WINDOW_FULLSCREEN)
-    cv2.imshow("window", opencvImage)
-    if cv2.waitKey(0) == 27:
-        break
+    showPIL(img)
+    # wait for gpio
+    try:  
+        GPIO.wait_for_edge(23, GPIO.FALLING)  
+    except KeyboardInterrupt:  
+        GPIO.cleanup()
+        exit()
+    GPIO.cleanup()   
     counter += 1
