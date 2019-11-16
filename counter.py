@@ -7,8 +7,9 @@ import sys, os
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
     import Tkinter
     tkinter = Tkinter #I decided to use a library reference to avoid potential naming conflicts with people's programs.
+    import tkFont
 else:
-    import tkinter
+    import tkinter, tkinter.font as tkFont
 
 import RPi.GPIO as GPIO
 
@@ -21,6 +22,9 @@ canvas = tkinter.Canvas(root,width=w,height=h)
 canvas.pack()
 canvas.configure(background='black')
 canvasImage = None
+
+print(tkFont.names())
+
 
 def showPIL(pilImage):
     global canvasImage
@@ -41,6 +45,7 @@ def showPIL(pilImage):
         canvasImage = canvas.create_image(w/2,h/2,image=image)
     else:
         canvas.itemconfig(canvasImage, image=image)
+    label = canvas.create_text(w/2, h/2, text="Test", fill="#ffab15", font=("SYEMOX italic",50 ,"bold" ))
     print("Update idle: {0}".format(datetime.now()))
     root.update_idletasks()
     print("Update: {0}".format(datetime.now()))
