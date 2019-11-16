@@ -23,7 +23,7 @@ canvas.pack()
 canvas.configure(background='black')
 canvasImage = None
 
-#Load background
+# Load background
 img = Image.open('BackgroundCompteurShots.png')
 imgWidth, imgHeight = img.size
 ratio = min(float(w)/imgWidth, float(h)/imgHeight)
@@ -35,7 +35,12 @@ canvasImage = canvas.create_image(w/2,h/2,image=image)
 counterText = canvas.create_text(w/2, h/2, text=" 0 ", fill="#fab150", font=("SYEMOX italic", 140,"normal" ))
 canvas.create_text(w/2, 3*h/4, text=u"shots servis depuis le début de la soirée", fill="#fab150", font=("SYEMOX italic", 90,"normal" ))
 
-counter = 0
+# Load counter
+try:
+    with open("counter.txt") as f:
+        counter = int(f.readlines()[0])
+except:
+    counter = 0
 
 while True:
     canvas.itemconfigure(counterText, text=" {} ".format(counter))
@@ -55,3 +60,5 @@ while True:
     print("Cleanup GPIO: {0}".format(datetime.now()))
     GPIO.cleanup()
     counter += 1
+    with open("counter.txt", "w") as f:
+        f.write("{0}".format(counter))
