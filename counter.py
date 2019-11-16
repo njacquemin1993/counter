@@ -52,12 +52,10 @@ while True:
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     # connect GPIO port 23 (pin 16) to GND (pin 6)
     try:
-        print("Wait GPIO: {0}".format(datetime.now()))
         GPIO.wait_for_edge(23, GPIO.FALLING)
     except KeyboardInterrupt:
         GPIO.cleanup()
         exit()
-    print("Cleanup GPIO: {0}".format(datetime.now()))
     GPIO.cleanup()
     counter += 1
     with open("counter.txt", "w") as f:
