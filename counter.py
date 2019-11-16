@@ -26,7 +26,7 @@ canvas.configure(background='black')
 canvasImage = None
 
 # Load background
-img = Image.open('BackgroundCompteurShots.png')
+img = Image.open('/home/pi/counter/BackgroundCompteurShots.png')
 imgWidth, imgHeight = img.size
 ratio = min(float(w)/imgWidth, float(h)/imgHeight)
 imgWidth = int(imgWidth*ratio)
