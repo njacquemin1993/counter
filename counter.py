@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from PIL import Image, ImageDraw, ImageFont, ImageTk
-import cv2
+from datetime import datetime
 import numpy
 import sys, os
 if sys.version_info[0] == 2:  # the tkinter library changed it's name from Python 2 to 3.
@@ -20,22 +20,37 @@ root.focus_set()
 canvas = tkinter.Canvas(root,width=w,height=h)
 canvas.pack()
 canvas.configure(background='black')
+canvasImage = None
 
 def showPIL(pilImage):
+    global canvasImage
+    print("Enter show pil: {0}".format(datetime.now()))
     imgWidth, imgHeight = pilImage.size
+    print(imgWidth, imgHeight)
     # resize photo to full screen
     ratio = min(float(w)/imgWidth, float(h)/imgHeight)
     imgWidth = int(imgWidth*ratio)
     imgHeight = int(imgHeight*ratio)
-    pilImage = pilImage.resize((imgWidth,imgHeight), Image.ANTIALIAS)
+    print(imgWidth, imgHeight)
+    print("Resize: {0}".format(datetime.now()))
+#    pilImage = pilImage.resize((imgWidth,imgHeight), Image.ANTIALIAS)
+    print("Photo image: {0}".format(datetime.now()))
     image = ImageTk.PhotoImage(pilImage)
-    imagesprite = canvas.create_image(w/2,h/2,image=image)
+    print("Create image: {0}".format(datetime.now()))
+    if canvasImage == None:
+        canvasImage = canvas.create_image(w/2,h/2,image=image)
+    else:
+        canvas.itemconfig(canvasImage, image=image)
+    print("Update idle: {0}".format(datetime.now()))
     root.update_idletasks()
+    print("Update: {0}".format(datetime.now()))
     root.update()
+    print("Quit show pil: {0}".format(datetime.now()))
 
 counter = 0
 
 while True:
+    print("Prepare image: {0}".format(datetime.now()))
     img = Image.open('BackgroundCompteurShots.png')
     number = str(counter)
     text = u"shots servis depuis le début de la soirée"
@@ -57,14 +72,18 @@ while True:
     d.text((pos_t_x, pos_t_y), text, font=fnt_t, fill=color)
     showPIL(img)
     # wait for gpio
+    print("Config GPIO: {0}".format(datetime.now()))
     GPIO.setmode(GPIO.BCM)
     # GPIO 23 set up as input. It is pulled up to stop false signals
+    print("Setup GPIO: {0}".format(datetime.now()))
     GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     # connect GPIO port 23 (pin 16) to GND (pin 6)
     try:
+        print("Wait GPIO: {0}".format(datetime.now()))
         GPIO.wait_for_edge(23, GPIO.FALLING)
     except KeyboardInterrupt:
         GPIO.cleanup()
         exit()
+    print("Cleanup GPIO: {0}".format(datetime.now()))
     GPIO.cleanup()
     counter += 1
