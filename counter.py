@@ -13,6 +13,8 @@ else:
 
 import RPi.GPIO as GPIO
 
+filepath = "/home/pi/counter/counter.txt"
+
 root = tkinter.Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
 root.overrideredirect(1)
@@ -37,7 +39,7 @@ canvas.create_text(w/2, 3*h/4, text=u"shots servis depuis le début de la soiré
 
 # Load counter
 try:
-    with open("counter.txt") as f:
+    with open(filepath) as f:
         counter = int(f.readlines()[0])
 except:
     counter = 0
@@ -58,5 +60,5 @@ while True:
         exit()
     GPIO.cleanup()
     counter += 1
-    with open("counter.txt", "w") as f:
+    with open(filepath, "w") as f:
         f.write("{0}".format(counter))
