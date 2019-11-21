@@ -38,7 +38,7 @@ w, h = root.winfo_screenwidth(), root.winfo_screenheight()
 root.overrideredirect(1)
 root.geometry("%dx%d+0+0" % (w, h))
 root.focus_set()
-canvas = tkinter.Canvas(root,width=w,height=h)
+canvas = tkinter.Canvas(root,width=w,height=h, highlightthickness=0)
 canvas.pack()
 canvas.configure(background='black')
 imgWidth, imgHeight = img.size
@@ -48,15 +48,15 @@ imgHeight = int(imgHeight*ratio)
 img = img.resize((imgWidth,imgHeight), Image.ANTIALIAS)
 image = ImageTk.PhotoImage(img)
 canvas.create_image(w/2,h/2,image=image)
-counterText = canvas.create_text(w/2, h/2, text=" {0} ".format(counter), fill="#fab150", font=("SYEMOX italic", 150,"normal"))
-canvas.create_text(w/2, 3*h/4, text=u"shots servis", fill="#fab150", font=("SYEMOX italic", 110, "normal"))
+counterText = canvas.create_text(w/2, 7*h/20, text=" {0} ".format(counter), fill="#fab150", font=("SYEMOX italic", 200,"normal"))
+canvas.create_text(w/2, 3*h/4, text=u"shots servis", fill="#fab150", font=("SYEMOX italic", 150, "normal"))
 root.update_idletasks()
 root.update()
 
 # setup GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.add_event_detect(23, GPIO.FALLING, callback=onButtonPress, bouncetime=120)
+GPIO.add_event_detect(23, GPIO.FALLING, callback=onButtonPress, bouncetime=200)
 
 # Infinite loop until keyboard interrupt
 try:
