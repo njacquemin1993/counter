@@ -55,8 +55,8 @@ root.update()
 
 # setup GPIO
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.add_event_detect(23, GPIO.FALLING, callback=onButtonPress, bouncetime=200)
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.add_event_detect(23, GPIO.RISING, callback=onButtonPress, bouncetime=200)
 
 # Infinite loop until keyboard interrupt
 try:
