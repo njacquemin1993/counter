@@ -17,8 +17,10 @@ import RPi.GPIO as GPIO
 def onButtonPress(channel):
     global counter
     global update
-    counter += 1
-    update = True
+    if GPIO.input(23):
+        # Double check it's a rising edge
+        counter += 1
+        update = True
 
 # Setup variables
 filepath = "/home/pi/counter/counter.txt"
